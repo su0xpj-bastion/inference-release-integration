@@ -1,0 +1,20 @@
+{
+  "base": {"compiler": "3.1", "runtime": "2.3", "kernels": "2.0"},
+  "commits": [
+    {"sha": "a1f0c3e", "component": "compiler", "version": "3.1", "message": "release/2026.10 baseline"},
+    {"sha": "b27d9a4", "component": "kernels",  "version": "2.1", "message": "kernels: fp16 fast path for fused attention"},
+    {"sha": "c3e81f0", "component": "compiler", "version": "3.2", "message": "compiler: single-pass liveness in memory planner"},
+    {"sha": "d4a6b72", "component": "runtime",  "version": "2.4", "message": "runtime: async input prefetch (overlap DMA with compute)"},
+    {"sha": "e5c2d18", "component": "runtime",  "version": "2.4.1", "message": "runtime: structured device logs"},
+    {"sha": "f6b93a5", "component": "kernels",  "version": "2.1.1", "message": "kernels: gelu tanh-approx constant cleanup"},
+    {"sha": "0a7e4c9", "component": "compiler", "version": "3.3", "message": "compiler: schedule projections for weight-DMA locality"},
+    {"sha": "1b8f5d3", "component": "kernels",  "version": "2.2", "message": "kernels: fix fp16 fused attention overflow (max-subtract)"},
+    {"sha": "2c9a6e7", "component": "compiler", "version": "3.4", "message": "compiler: planner lifetime uses last use"},
+    {"sha": "3dab7f1", "component": "runtime",  "version": "2.5", "message": "runtime: prefetch hazard check covers all inputs"}
+  ],
+  "releases": {
+    "2026.10":     "a1f0c3e",
+    "2026.11-rc1": "0a7e4c9",
+    "2026.11-rc2": "3dab7f1"
+  }
+}

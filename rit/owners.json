@@ -1,0 +1,7 @@
+{
+  "compiler": "inference-core/compiler",
+  "runtime": "inference-core/runtime",
+  "kernels": "inference-core/kernels",
+  "infra": "core-infra/device-fleet",
+  "unknown": "rit/triage-oncall"
+}

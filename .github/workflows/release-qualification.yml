@@ -1,0 +1,58 @@
+name: release-qualification
+# Nightly: 3-way covering array on the release branch head.
+# Manual: full matrix against any release candidate, sharded, with a GO/NO-GO report.
+on:
+  schedule: [{cron: "0 7 * * *"}]
+  workflow_dispatch:
+    inputs:
+      release:  {description: "candidate (release name or sha)", default: "2026.11-rc2"}
+      baseline: {description: "last shipped release", default: "2026.10"}
+      mode:     {description: "nightly | release", default: "release"}
+      fault_rate: {description: "injected device-timeout rate per kernel call", default: "0.001"}
+
+env:
+  RELEASE: ${{ inputs.release || '2026.11-rc2' }}
+  BASELINE: ${{ inputs.baseline || '2026.10' }}
+  MODE: ${{ inputs.mode || 'nightly' }}
+  FAULT_RATE: ${{ inputs.fault_rate || '0.001' }}
+
+jobs:
+  run:
+    name: shard ${{ matrix.shard }}/3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false            # a red shard must not hide the other shards' evidence
+      matrix: {shard: [1, 2, 3]}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.13", cache: pip, cache-dependency-path: requirements.txt}
+      - run: pip install -r requirements.txt
+      - name: run shard (product failures are reported by the qualify job, not here)
+        run: |
+          python -m rit run --commit "$RELEASE" --mode "$MODE" --shard ${{ matrix.shard }}/3 \
+            --fault-rate "$FAULT_RATE" --run-seed ${{ github.run_id }} --out results/shard-${{ matrix.shard }}.jsonl || true
+      - uses: actions/upload-artifact@v7
+        with: {name: "results-${{ matrix.shard }}", path: results/}
+
+  qualify:
+    needs: run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.13", cache: pip, cache-dependency-path: requirements.txt}
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v8
+        with: {pattern: "results-*", merge-multiple: true, path: results/}
+      - name: qualify (exit 0 GO, 1 NO-GO, 2 INCONCLUSIVE)
+        run: |
+          python -m rit qualify --release "$RELEASE" --baseline-release "$BASELINE" --mode "$MODE" \
+            --results results/shard-*.jsonl --out reports/qualification.md > /dev/null
+      - if: always()
+        run: cat reports/qualification.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: {name: qualification-report, path: reports/}

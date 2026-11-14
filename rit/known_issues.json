@@ -1,0 +1,9 @@
+[
+  {
+    "id": "INFRA-311",
+    "match": "^infra:",
+    "summary": "Intermittent device heartbeat loss on shared test fleet",
+    "waived": true,
+    "owner": "core-infra/device-fleet"
+  }
+]
