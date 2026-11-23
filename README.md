@@ -1,5 +1,7 @@
 # inference-release-integration
 
+> **Moved.** This project now lives in [inference-qa-lab/inference-release-integration](https://github.com/su0xpj-bastion/inference-qa-lab/tree/main/inference-release-integration), where it is maintained and tested. This repository is archived and read-only.
+
 A Release Integration Testing (RIT) harness for an AI inference core. It takes a set of integrated component versions and returns a **GO / NO-GO / INCONCLUSIVE** decision with evidence. When the answer is NO-GO, it explains why: which layer, which kernel, which tensor, the minimal trigger, an owner, and a bisect verdict.
 
 Feature teams own feature qualification. This harness covers what falls between their suites. Each seeded defect below passes the owning team's unit tests ([`test_component_suites.py`](tests/unit/test_component_suites.py)), and the release is still broken.
